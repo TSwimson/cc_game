@@ -1,0 +1,29 @@
+.gameTable {
+  background-color: gray;
+}
+.cell {
+  background-color: white;
+  width: 10px;
+  height: 10px;
+}
+.alive {
+  background-color: black;
+}
+.one-territory {
+  background-color: #889;
+}
+.two-territory {
+  background-color: #988;
+}
+.one-alive {
+  background-color: #009;
+}
+.two-alive {
+  background-color: #900;
+}
+.three-alive {
+  background-color: #099;
+}
+.four-alive {
+  background-color: #990;
+}

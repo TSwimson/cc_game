@@ -1,99 +1,55 @@
-gameSetup = {};
+playerSetup = {};
+opdata = {};
+//connects to this users private channel
+playerSetup.join_user_channel = function() {
+  playerSetup.dispatcher = new WebSocketRails('localhost:3000/websocket');
+  playerSetup.user_channel = playerSetup.dispatcher.subscribe_private('user' + $('#current_user').data('userId'));
+  playerSetup.user_channel.on_success = function(current_user){
+    playerSetup.current_user = current_user;
+    console.log('joined a channel as: ' + current_user.name);
+  };
+  playerSetup.user_channel.on_failure = function(reason){
+    console.log("failed : " + reason.message);
+  };
+};
+//sets players status to looking and subscribes to the found opponent event
+playerSetup.find_match = function() {
+  console.log('find_match called');
+  var find_success = function(data){
+    console.log('find success: ' + data);
+  };
+  var find_failure = function(data){
+    console.log('find failure: ' + data);
+  };
+  var object = {};
+  playerSetup.dispatcher.trigger('find_opponent', object, find_success, find_failure);
+
+  playerSetup.user_channel.bind('opponent_found', function(data){
+    //playerSetup.user_channel.unbind('opponent_found');
+    console.log("player found: " + data);
+    playerSetup.opponent = JSON.parse(data);
+    playerSetup.enter_game();
+  });
+};
+
+playerSetup.enter_game = function(){
+  console.log('enter_game js called');
+  playerSetup.user_channel.bind('entered_game', function(data){
+    console.log("Game created");
+    console.log("data " + data);
+    playerSetup.game = JSON.parse(data);
+    gameWrapper.start_game();
+  });
+  var game = {};
+  game.player_one_id = playerSetup.current_user.id;
+  game.player_two_id = playerSetup.opponent.id;
+  playerSetup.dispatcher.trigger('join_game', game);
+  console.log('enter_game js ended');
+};
+
 $(function(){
-  $.ajaxSetup({
-    headers: {
-      'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-    }
-  });
-});
-
-
-gameSetup.nameSubmitHandler = function(event) {
-  event.preventDefault();
-  gameSetup.createPlayer($('#name').val(), gameSetup.playerCreated);
-  $('#player_form').remove();
-};
-
-gameSetup.createPlayer = function(name, callback) {
-  $.ajax({
-    method: 'post',
-    url: '/players',
-    data: {player: {name: name, status: 'looking'}}
-  }).done(callback);
-};
-
-gameSetup.playerCreated = function(data) {
-  $('#welcome').html('Welcome, ' + data.you.name);
-  $.cookie('name', data.you.name, {expires: 99});
-  $.cookie('id', data.you.id, {expires: 99});
-  gameSetup.player = {};
-  gameSetup.player.name = data.you.name;
-  gameSetup.player.id = data.you.id;
-  gameSetup.getOponentWrapper();
-};
-
-gameSetup.getOponentWrapper = function(){
-  $('oponent').html("looking for players");
-  var finding_players_interval = setInterval(function(){gameSetup.getOponent(finding_players_interval);}, 1000);
-};
-
-gameSetup.getOponent = function(interval){
-  $.ajax({
-    method: 'put',
-    url: '/players/' + gameSetup.player.id,
-    data: {player: {status: 'looking'} } //todo add last message column
-  }).done(function(data){
-    if (data.player !== 'not found') {
-      clearInterval(interval);
-      $('#oponent').html('Player found: ' + data.player.name);
-      gameSetup.oponent = {};
-      gameSetup.oponent.name = data.player.name;
-      gameSetup.oponent.id = data.player.id;
-      gameSetup.createGame();
-    }
-  });
-};
-
-gameSetup.createGame = function(){
-  $.ajax({
-    method: 'post',
-    url:    '/games',
-    data: {player_one: {id: gameSetup.player.id}, player_two: {id: gameSetup.oponent.id}}
-  }).done(gameSetup.createdGame);
-};
-
-gameSetup.createdGame = function(data){
-  if (data.error !== undefined){
-    alert("An error occured please try again");
-    //TODO better error for when a game wasn't made correctly
-  } else if (data.game.status === 'starting'){
-    $('#oponent').html($('#oponent').html() + "<p>waiting for player to join</p>");
-    gameSetup.game = {};
-    gameSetup.game.id = data.game.id;
-    gameSetup.checkGameStatusWrapper();
-  } else if (data.game.status === 'started') {
-    $('#oponent').html($('#oponent').html() + "<p>Player joined! Starting Game</p>");
-    //TODO Start the game
+  if (typeof(playerSetup.user_channel) === 'undefined'){
+    playerSetup.join_user_channel();
   }
-};
-
-gameSetup.checkGameStatusWrapper = function(){
-  var gameStatusCheckerInterval = setInterval(function(){
-    gameSetup.checkGameStatus(gameStatusCheckerInterval);
-  }, 500);
-};
-
-gameSetup.checkGameStatus = function(interval){
-  $.ajax({
-      method: 'get',
-      url: 'games/' + gameSetup.game.id
-    }).done(function(data){
-      if (data.error === undefined) {
-        clearInterval(interval);
-        gameSetup.createdGame(data);
-      }
-    });
-};
-
-$(document).on('submit', '#player_form', gameSetup.nameSubmitHandler);
-
+  $('body').on('click', '.find_match', playerSetup.find_match);
+});

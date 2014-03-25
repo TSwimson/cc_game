@@ -34,6 +34,10 @@ end
 group :development do
   gem 'pry'
 end
+
+# gem 'unicorn'
+
+# gem 'unicorn-rails', :groups => [:development, :test]
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
 

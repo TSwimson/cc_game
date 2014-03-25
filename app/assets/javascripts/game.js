@@ -1,3 +1,47 @@
+gameWrapper = {};
+
+gameWrapper.start_game = function() {
+  gameWrapper.nextMoves = [];
+  gameWrapper.grid = new Grid(40,40);
+
+  gameWrapper.channel = playerSetup.dispatcher.subscribe_private('game' + playerSetup.game.id);
+  gameWrapper.channel.on_success = function(data){
+    console.log('Joined game channel. Data: ' + data);
+  };
+
+  gameWrapper.channel.on_failure = function(data){
+    console.log('couldnt join game channel. Data: ' + data);
+  };
+
+  playerSetup.user_channel.bind('next_turn', function(data){
+    console.log('next turn triggered data : ' + data);
+    moves = JSON.parse(data);
+    moves = moves[playerSetup.opponent.id];
+    for (var i in moves) {
+      gameWrapper.grid.click(moves[i][0],moves[i][1]);
+    }
+    for(i = 0; i < 10; i++){
+      setTimeout(function(){gameWrapper.grid.update.apply(gameWrapper.grid);},200*i);
+    }
+  });
+  if (playerSetup.opponent.id > playerSetup.current_user.id) {
+    gameWrapper.player = "one";
+    gameWrapper.opponent = "two";
+  } else {
+    gameWrapper.player = "two";
+    gameWrapper.opponent = "one";
+  }
+
+  $('#gameButtons').html("<button id='endTurn'>End Turn</button>");
+
+
+  $('#endTurn').on('click', function(event){
+    console.log('submitting turn');
+    playerSetup.dispatcher.trigger('submit_turn', { moves: gameWrapper.nextMoves });
+    gameWrapper.nextMoves = [];
+  });
+};
+
 var GAME = {
   width: 400,
   height: 400,
@@ -33,52 +77,71 @@ var GAME = {
 };
 
 //Cell definition
-var Cell = function (alive, x, y) {
+var Cell = function (alive, x, y, ter) {
   this.alive = alive;
   this.player = '';
   this.nextPlayer = '';
-  this.rect = new fabric.Rect({
-    left: (GAME.cell.width + 1) * x,
-    top: (GAME.cell.height + 1) * y,
-    fill: GAME.cell.deadColor,
-    width: GAME.cell.width,
-    height: GAME.cell.height,
-    selectable: false,
-  });
+  this.territory = ter;
+  this.pos = [x, y];
+  this.$el = $("<td class='cell " + this.territory + "-territory'></td>");
+  var _this = this;
+  this.$el.on('click', function(event){_this.click(_this, event);});
 };
 
-Cell.prototype.click = function(p) {
-  this.alive = !this.alive;
-  this.player = p;
-  this.nextPlayer = p;
-  this.update();
+Cell.prototype.click = function(_this, event) {
+  if(_this.territory === gameWrapper.player) {
+    _this.alive = !_this.alive;
+    _this.player = gameWrapper.player;
+    _this.nextPlayer = gameWrapper.player;
+    _this.update();
+    gameWrapper.nextMoves.push(this.pos);
+  }
+};
+
+Cell.prototype.computer_click = function() {
+  if (this.territory === gameWrapper.opponent){
+    this.alive = !this.alive;
+    this.player = gameWrapper.opponent;
+    this.nextPlayer = gameWrapper.opponent;
+    this.update();
+  }
 };
 
 Cell.prototype.update = function(){
   if (this.alive) {
     if (this.player === '') {
-      this.rect.set('fill', GAME.cell.aliveColor);
+      this.$el.addClass('alive');
     } else {
-      this.rect.set('fill', GAME.players[this.player].cell.aliveColor);
+      this.$el.addClass(this.player + '-alive');
     }
   }
   else {
-    this.rect.set('fill', GAME.cell.deadColor);
+    this.$el.removeClass('alive');
+    this.$el.removeClass(this.player + '-alive');
   }
 };
 
 //Grid definition
-var Grid = function(w, h, c) {
-  this.initGrid(w,h, c);
+var Grid = function(w, h) {
+  this.initGrid(w,h);
 };
 
-Grid.prototype.initGrid = function(w, h, canvas) {
+Grid.prototype.initGrid = function(w, h) {
   this.cells = [];
+  var row;
+  var ter = "one";
   for (var x = 0; x < w; x++) {
     this.cells[x] = [];
+    if (ter === 'one' && x > (h / 2) - h/20){
+      ter = '';
+    } else if (ter === '' && x > (h / 2)+ h/20) {
+      ter = 'two';
+    }
+    row = $('<tr></tr>');
+    $('#gameTableBody').append(row);
     for (var y = 0; y < h; y++) {
-      this.cells[x].push(new Cell(false, x, y));
-      canvas.add(this.cells[x][y].rect);
+      this.cells[x].push(new Cell(false, x, y, ter));
+      row.append(this.cells[x][y].$el);
     }
   }
 };
@@ -104,7 +167,7 @@ Grid.prototype.update = function() {
       } else if (count == 3) {
         result = true;
         for (var p in playerCounts) {
-          if (playerCounts[p] > 2) {
+          if (playerCounts[p] > 1) {
             this.cells[x][y].nextPlayer = p;
           }
         }
@@ -168,42 +231,6 @@ Grid.prototype.getNumLivingCellsNearby = function(x, y) {
   return [count, player];
 };
 
-Grid.prototype.click = function(options, p) {
-  var x = options.target.left / (GAME.cell.width + GAME.cell.padding);
-  var y = options.target.top / (GAME.cell.height + GAME.cell.padding);
-  this.cells[x][y].click(p);
+Grid.prototype.click = function(x,y) {
+  this.cells[x][y].computer_click();
 };
-
-$(function(){
-  var canvas = new fabric.Canvas('c');
-  canvas.selection = false;
-  var grid = new Grid(20,20,canvas);
-  window.grid = grid;
-  var player = '';
-
-  canvas.on('mouse:down', function(options){
-    if (options.target !== undefined) {
-      grid.click(options, player);
-    } else {
-      grid.update();
-    }
-  });
-  
-  $('body').on('keydown', function(event){
-    if (event.keyCode === 79) {
-      player = 'one';
-    } else if (event.keyCode === 84 ) {
-      player = 'two';
-    } else {
-      player = '';
-    }
-  });
-
-});
-
-
-
-
-
-
-

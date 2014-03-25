@@ -4,7 +4,7 @@ class CreatePlayers < ActiveRecord::Migration
       t.string :name
       t.string :status
       t.belongs_to :game, index: true
-
+      t.belongs_to :user, index: true
       t.timestamps
     end
   end

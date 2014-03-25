@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140324180806) do
+ActiveRecord::Schema.define(version: 20140324174736) do
 
   create_table "games", force: true do |t|
     t.integer  "round"
@@ -21,27 +21,28 @@ ActiveRecord::Schema.define(version: 20140324180806) do
   end
 
   create_table "moves", force: true do |t|
-    t.integer  "player_id"
-    t.integer  "x"
-    t.integer  "y"
+    t.integer  "user_id"
+    t.integer  "game_id"
+    t.text     "points"
     t.integer  "round"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "moves", ["player_id"], name: "index_moves_on_player_id"
+  add_index "moves", ["game_id"], name: "index_moves_on_game_id"
+  add_index "moves", ["user_id"], name: "index_moves_on_user_id"
 
   create_table "players", force: true do |t|
     t.string   "name"
     t.string   "status"
     t.integer  "game_id"
+    t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.decimal  "last_com"
-    t.integer  "user_id"
   end
 
   add_index "players", ["game_id"], name: "index_players_on_game_id"
+  add_index "players", ["user_id"], name: "index_players_on_user_id"
 
   create_table "users", force: true do |t|
     t.string   "email",                  default: "", null: false
