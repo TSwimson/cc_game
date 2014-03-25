@@ -2,8 +2,9 @@ gameWrapper = {};
 
 gameWrapper.start_game = function() {
   gameWrapper.nextMoves = [];
-  gameWrapper.grid = new Grid(40,40);
 
+  gameWrapper.grid = new Grid(40,40);
+  gameWrapper.round_one = true;
   gameWrapper.channel = playerSetup.dispatcher.subscribe_private('game' + playerSetup.game.id);
   gameWrapper.channel.on_success = function(data){
     console.log('Joined game channel. Data: ' + data);
@@ -24,22 +25,40 @@ gameWrapper.start_game = function() {
       setTimeout(function(){gameWrapper.grid.update.apply(gameWrapper.grid);},200*i);
     }
   });
+
   if (playerSetup.opponent.id > playerSetup.current_user.id) {
-    gameWrapper.player = "one";
-    gameWrapper.opponent = "two";
+    gameWrapper.player = {};
+    gameWrapper.opponent = {};
+    gameWrapper.player.number = "one";
+    gameWrapper.opponent.number = "two";
+
   } else {
-    gameWrapper.player = "two";
-    gameWrapper.opponent = "one";
+    gameWrapper.player = {};
+    gameWrapper.opponent = {};
+    gameWrapper.player.number = "two";
+    gameWrapper.opponent.number = "one";
   }
+  gameWrapper.player.cells = 4;
+  gameWrapper.opponent.cells = 4;
 
   $('#gameButtons').html("<button id='endTurn'>End Turn</button>");
-
+  gameWrapper.updateCellCount();
 
   $('#endTurn').on('click', function(event){
     console.log('submitting turn');
     playerSetup.dispatcher.trigger('submit_turn', { moves: gameWrapper.nextMoves });
     gameWrapper.nextMoves = [];
+    gameWrapper.player.cells += 10;
+    gameWrapper.opponent.cells += 10;
+    gameWrapper.updateCellCount();
+    if (gameWrapper.endGame) {
+      alert("player " + gameWrapper.loser +  ' lost!');
+    }
   });
+};
+
+gameWrapper.updateCellCount = function(){
+  $('#playerCells').html("<p>Your Cell Count: " + gameWrapper.player.cells + "</p>");
 };
 
 var GAME = {
@@ -82,6 +101,7 @@ var Cell = function (alive, x, y, ter) {
   this.player = '';
   this.nextPlayer = '';
   this.territory = ter;
+  this.lifeBlock = false;
   this.pos = [x, y];
   this.$el = $("<td class='cell " + this.territory + "-territory'></td>");
   var _this = this;
@@ -89,21 +109,30 @@ var Cell = function (alive, x, y, ter) {
 };
 
 Cell.prototype.click = function(_this, event) {
-  if(_this.territory === gameWrapper.player) {
+  if(_this.territory === gameWrapper.player.number && gameWrapper.player.cells > 0 && !_this.alive) {
     _this.alive = !_this.alive;
-    _this.player = gameWrapper.player;
-    _this.nextPlayer = gameWrapper.player;
+    _this.player = gameWrapper.player.number;
+    _this.nextPlayer = gameWrapper.player.number;
     _this.update();
     gameWrapper.nextMoves.push(this.pos);
+    gameWrapper.player.cells -= 1;
+    if (gameWrapper.round_one) {
+      _this.lifeBlock = true;
+    }
+    gameWrapper.updateCellCount();
   }
 };
 
 Cell.prototype.computer_click = function() {
-  if (this.territory === gameWrapper.opponent){
+  if (this.territory === gameWrapper.opponent.number && gameWrapper.opponent.cells > 0 && !this.alive) {
     this.alive = !this.alive;
-    this.player = gameWrapper.opponent;
-    this.nextPlayer = gameWrapper.opponent;
+    this.player = gameWrapper.opponent.number;
+    this.nextPlayer = gameWrapper.opponent.number;
     this.update();
+    gameWrapper.opponent.cells -= 1;
+    if (gameWrapper.round_one) {
+      this.lifeBlock = true;
+    }
   }
 };
 
@@ -173,6 +202,10 @@ Grid.prototype.update = function() {
         }
       }
       this.cells[x][y].nextAlive = result;
+      if (this.cells[x][y].lifeBlock && result === false) {
+        gameWrapper.endGame = true;
+        gameWrapper.loser = this.cells[x][y].player;
+      }
 
     }
   }
