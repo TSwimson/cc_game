@@ -109,7 +109,13 @@ var Cell = function (alive, x, y, ter) {
   this.pos = [x, y];
   this.$el = $("<td class='cell " + this.territory + "-territory'></td>");
   var _this = this;
-  this.$el.on('click', $.proxy(this.click(), this));
+  this.$el.on('click', function(){
+    if (pallet.cursor){
+      $.proxy(_this.stamp(), _this);
+    } else {
+      $.proxy(_this.click(gameWrapper.player), _this);
+    }
+  });
 };
 
 Cell.prototype.stamp = function(){
@@ -117,36 +123,23 @@ Cell.prototype.stamp = function(){
   y_offset = this.pos[1];
   for (var x in pallet.cells) {
     for (var y in pallet.cells) {
-      
+      gameWrapper.grid.click(x+x_offset, y+y_offset, gameWrapper.player);
     }
   }
 };
 
-Cell.prototype.click = function() {
-  if(this.territory === gameWrapper.player.number && gameWrapper.player.cells > 0 && !this.alive) {
+Cell.prototype.click = function(player) {
+  if(this.territory === player.number && player.cells > 0 && !this.alive) {
     this.alive = true;
-    this.player = gameWrapper.player.number;
-    this.nextPlayer = gameWrapper.player.number;
+    this.player = player.number;
+    this.nextPlayer = player.number;
     this.update();
     gameWrapper.nextMoves.push(this.pos);
-    gameWrapper.player.cells -= 1;
+    player.cells -= 1;
     if (gameWrapper.round_one) {
       this.lifeBlock = true;
     }
     gameWrapper.updateCellCount();
-  }
-};
-
-Cell.prototype.computer_click = function() {
-  if (this.territory === gameWrapper.opponent.number && gameWrapper.opponent.cells > 0 && !this.alive) {
-    this.alive = !this.alive;
-    this.player = gameWrapper.opponent.number;
-    this.nextPlayer = gameWrapper.opponent.number;
-    this.update();
-    gameWrapper.opponent.cells -= 1;
-    if (gameWrapper.round_one) {
-      this.lifeBlock = true;
-    }
   }
 };
 
@@ -278,6 +271,9 @@ Grid.prototype.getNumLivingCellsNearby = function(x, y) {
   return [count, player];
 };
 
-Grid.prototype.click = function(x,y) {
-  this.cells[x][y].computer_click();
+Grid.prototype.click = function(x,y,player) {
+  if (typeof(player) === 'undefined'){
+    player = gameWrapper.opponent;
+  }
+  this.cells[x][y].click(player);
 };
