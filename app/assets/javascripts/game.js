@@ -41,11 +41,14 @@ gameWrapper.start_game = function() {
   gameWrapper.player.cells = 4;
   gameWrapper.opponent.cells = 4;
 
-  $('#gameButtons').html("<button id='endTurn'>End Turn</button>");
+  $('#gameButtons').html("<button type='button' id='endTurn'>End Turn</button>");
   gameWrapper.updateCellCount();
-
+  gameWrapper.endGame = false;
   $('#endTurn').on('click', function(event){
     console.log('submitting turn');
+    if (gameWrapper.round_one){
+      gameWrapper.round_one = false;
+    }
     playerSetup.dispatcher.trigger('submit_turn', { moves: gameWrapper.nextMoves });
     gameWrapper.nextMoves = [];
     gameWrapper.player.cells += 10;

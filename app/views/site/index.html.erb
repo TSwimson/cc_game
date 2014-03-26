@@ -1,11 +1,14 @@
 <h1 id='current_user' data-user-id='<%= @current_user.id %>'>Welcome, <%= @current_user.player.name %></h1>
 <p>This is a multiplayer game based on Conways Game of life.</p>
-<div class="find_match">Find Opponent</div><%= link_to('Logout', destroy_user_session_path, :method => :delete) %> 
-<p id="welcome"></p>
-<p id='oponent'></p>
+<button type='button' id='find_opponent' class="find_match">Find Opponent</button>
+<div id='finding_opponent'></div>
 <div id='playerCells'></div>
 <table class='gameTable'>
   <tbody id='gameTableBody'>
   </tbody>
 </table>
+<table class='palletTable'>
+    <tbody id='palletTableBody'>
+    </tbody>
+  </table>
 <div id="gameButtons"></div>

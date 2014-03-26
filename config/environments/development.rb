@@ -26,7 +26,7 @@ CcGame::Application.configure do
   # This option may cause significant delays in view rendering with a large
   # number of complex assets.
   config.assets.debug = true
-
+  config.server_static_assets = false
   config.threadsafe!
   # mail for devise
   config.action_mailer.default_url_options = { host: 'localhost:3000' }

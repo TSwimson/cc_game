@@ -4,7 +4,7 @@ opdata = {};
 playerSetup.join_user_channel = function() {
   playerSetup.dispatcher = new WebSocketRails('localhost:3000/websocket');
   playerSetup.user_channel = playerSetup.dispatcher.subscribe_private('user' + $('#current_user').data('userId'));
-  playerSetup.user_channel.on_success = function(current_user){
+  playerSetup.user_channel.on_success = function(current_user) {
     playerSetup.current_user = current_user;
     console.log('joined a channel as: ' + current_user.name);
   };
@@ -14,6 +14,8 @@ playerSetup.join_user_channel = function() {
 };
 //sets players status to looking and subscribes to the found opponent event
 playerSetup.find_match = function() {
+  $('#find_opponent').remove();
+  $('#finding_opponent').html('Looking For Player');
   console.log('find_match called');
   var find_success = function(data){
     console.log('find success: ' + data);
@@ -26,6 +28,7 @@ playerSetup.find_match = function() {
 
   playerSetup.user_channel.bind('opponent_found', function(data){
     //playerSetup.user_channel.unbind('opponent_found');
+    $('#finding_opponent').remove();
     console.log("player found: " + data);
     playerSetup.opponent = JSON.parse(data);
     playerSetup.enter_game();

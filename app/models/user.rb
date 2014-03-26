@@ -8,7 +8,7 @@ class User < ActiveRecord::Base
   after_create :create_player
 
   def create_player
-    self.player = Player.create(name: SecureRandom.urlsafe_base64(20))
+    self.player = Player.create(name: self.email)
   end
 
 end
