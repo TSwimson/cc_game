@@ -121,9 +121,12 @@ var Cell = function (alive, x, y, ter) {
 Cell.prototype.stamp = function(){
   x_offset = this.pos[0];
   y_offset = this.pos[1];
-  for (var x in pallet.cells) {
-    for (var y in pallet.cells) {
-      gameWrapper.grid.click(x+x_offset, y+y_offset, gameWrapper.player);
+  len = pallet.cells.length;
+  for (var x = 0; x < len; x++) {
+    for (var y = 0; y < len; y++) {
+      if (pallet.cells[x][y].alive) {
+        gameWrapper.grid.click(x+x_offset, y+y_offset, gameWrapper.player);
+      }
     }
   }
 };
