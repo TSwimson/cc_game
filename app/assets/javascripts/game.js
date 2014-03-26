@@ -109,19 +109,29 @@ var Cell = function (alive, x, y, ter) {
   this.pos = [x, y];
   this.$el = $("<td class='cell " + this.territory + "-territory'></td>");
   var _this = this;
-  this.$el.on('click', function(event){_this.click(_this, event);});
+  this.$el.on('click', $.proxy(this.click(), this));
 };
 
-Cell.prototype.click = function(_this, event) {
-  if(_this.territory === gameWrapper.player.number && gameWrapper.player.cells > 0 && !_this.alive) {
-    _this.alive = !_this.alive;
-    _this.player = gameWrapper.player.number;
-    _this.nextPlayer = gameWrapper.player.number;
-    _this.update();
+Cell.prototype.stamp = function(){
+  x_offset = this.pos[0];
+  y_offset = this.pos[1];
+  for (var x in pallet.cells) {
+    for (var y in pallet.cells) {
+      
+    }
+  }
+};
+
+Cell.prototype.click = function() {
+  if(this.territory === gameWrapper.player.number && gameWrapper.player.cells > 0 && !this.alive) {
+    this.alive = true;
+    this.player = gameWrapper.player.number;
+    this.nextPlayer = gameWrapper.player.number;
+    this.update();
     gameWrapper.nextMoves.push(this.pos);
     gameWrapper.player.cells -= 1;
     if (gameWrapper.round_one) {
-      _this.lifeBlock = true;
+      this.lifeBlock = true;
     }
     gameWrapper.updateCellCount();
   }
