@@ -44,7 +44,7 @@ gameWrapper.start_game = function() {
   $('#gameButtons').html("<button type='button' id='endTurn'>End Turn</button>");
   gameWrapper.updateCellCount();
   gameWrapper.endGame = false;
-  $('#endTurn').on('click', function(event){
+  $('#endTurn').on('click', function(event) {
     console.log('submitting turn');
     if (gameWrapper.round_one){
       gameWrapper.round_one = false;
@@ -58,6 +58,7 @@ gameWrapper.start_game = function() {
       alert("player " + gameWrapper.loser +  ' lost!');
     }
   });
+  pallet.init();
 };
 
 gameWrapper.updateCellCount = function(){

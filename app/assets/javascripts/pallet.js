@@ -21,6 +21,34 @@ pallet.init = function () {
   pallet.initGrid(10);
 };
 
+pallet.toggleCursor = function() {
+  if (pallet.cursor) {
+    pallet.disableCursor();
+    pallet.cursor = false;
+  } else {
+    pallet.enableCursor();
+    pallet.cursor = true;
+  }
+};
+
+pallet.enableCursor = function () {
+  $('#cursor').show();
+  $('#cursor').html($('#palletTable').clone());
+  $(document).bind('mousemove', function(e){
+    $('#cursor').css({
+       left:  e.pageX,
+       top:   e.pageY
+    });
+  });
+  $('#copy_button').html('Cancel');
+};
+
+pallet.disableCursor = function () {
+  $('#cursor').hide();
+  $('#copy_button').html('Copy');
+  $(document).unbind('mousemove');
+};
+
 pallet.initGrid = function (s) {
   var tableBody = $('#palletTableBody');
   pallet.cells = [];
@@ -33,7 +61,6 @@ pallet.initGrid = function (s) {
     }
     tableBody.append(row);
   }
+  $('#gameButtons').append("<button id='copy_button' type='button'>Copy</button>");
+  $('#copy_button').bind('click', pallet.toggleCursor);
 };
-$(function(){
-  pallet.init();
-});

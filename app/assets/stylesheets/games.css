@@ -28,3 +28,11 @@
 .four-alive {
   background-color: #990;
 }
+#cursor {
+  pointer-events:none;
+  filter:alpha(opacity=50);
+  opacity:0.5;
+  display: none;
+  position: absolute;
+  z-index: 100;
+}
