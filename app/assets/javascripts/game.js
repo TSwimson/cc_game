@@ -42,7 +42,7 @@ gameWrapper.start_game = function() {
   gameWrapper.opponent.cells = 4;
 
   $('#gameButtons').html("<button type='button' id='endTurn'>End Turn</button>");
-  gameWrapper.updateCellCount();
+
   gameWrapper.endGame = false;
   $('#endTurn').on('click', function(event) {
     console.log('submitting turn');
@@ -59,10 +59,11 @@ gameWrapper.start_game = function() {
     }
   });
   pallet.init();
+  gameWrapper.updateCellCount();
 };
 
 gameWrapper.updateCellCount = function(){
-  $('#playerCells').html("<p>Your Cell Count: " + gameWrapper.player.cells + "</p>");
+  $('#playerCells').html("<p>" + gameWrapper.player.cells + " cells remaining</p>");
 };
 
 var GAME = {

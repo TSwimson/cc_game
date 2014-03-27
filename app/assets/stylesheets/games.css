@@ -1,16 +1,55 @@
+body {
+  background-color: #f2f2f2;
+}
+.structure {
+  background-color: #444;
+  box-shadow: 1px 1px 3px 3px #777;
+  border-radius: 5px;
+  padding: 0;
+}
+.structure-inner-div {
+  margin: 5 auto;
+  width: 121px;
+  height: 121px;
+}
+.structureTable {
+}
+.structure h4 {
+  margin: 5px auto;
+}
+.gameContainer {
+  background-color: #333;
+  box-shadow: 1px 1px 3px 3px #777;
+  border-radius: 5px;
+  color: #f2f2f2;
+  padding: 10px;
+}
 .gameTable {
   background-color: gray;
 }
+#gameButtons {
+ color: #888; 
+}
+#palletDiv {
+  height: 480px;
+}
+#playerCells {
+  float: right;
+}
 .cell {
   background-color: white;
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border: 1px solid gray;
 }
-/*.palletTable .cell {
+.palletTable .cell {
   width: 15px;
   height: 15px;
-}*/
+}
+#cursor .palletTable .cell {
+  width: 12px;
+  height: 12px;
+}
 .alive {
   background-color: black;
 }
@@ -31,6 +70,14 @@
 }
 .four-alive {
   background-color: #990;
+}
+#playerCells {
+  float: right;
+  position: absolute;
+  bottom: 5px;
+}
+#structures {
+  margin-bottom: 10px;
 }
 #cursor {
   pointer-events:none;

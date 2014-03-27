@@ -1,6 +1,23 @@
 pallet = {};
+var simpleGrid = function(s, cells, name){
+  var className = name.split(' ').join('_');
+  var context = {className: className, name: name};
+  var html = HandlebarsTemplates.structure(context);
+  $('#structures').append(html);
+  var tableBody = $('.' + className);
+  this.cells = [];
+  for (var x = 0; x < s; x += 1) {
+    this.cells.push([]);
+    var row = $('<tr></tr>');
+    for (var y = 0; y < s; y += 1) {
+       this.cells[x].push(new basicCell(x,y,cells[x][y], true));
+       row.append(this.cells[x][y].$el);
+    }
+    tableBody.append(row);
+  }
+};
 
-basicCell = function(x, y, alive){
+basicCell = function(x, y, alive, noEvents){
   this.pos = [x,y];
   this.alive = alive;
   this.$el = $("<td class='cell'></td>");
@@ -8,7 +25,9 @@ basicCell = function(x, y, alive){
     this.$el.addClass('alive');
   }
   var _this = this;
-  this.$el.on('click', $.proxy(this.click, this));
+  if (typeof(noEvents) === 'undefined' || noEvents === false) {
+    this.$el.on('click', $.proxy(this.click, this));
+  }
 };
 
 basicCell.prototype.click = function() {
@@ -18,17 +37,18 @@ basicCell.prototype.click = function() {
   } else {
     this.$el.removeClass('alive');
   }
-  if (pallet.cursor){
+  if (pallet.cursor) {
     $('#cursor').html($('#palletTable').clone());
   }
 };
 
 pallet.init = function () {
+  var html = HandlebarsTemplates.pallet();
+  $('#palletDiv').html(html);
+
   pallet.initGrid(10);
-  $('#gameButtons').append("<button id='copy_button' type='button'>Copy</button>");
-  $('#gameButtons').append("<button id='clear_pallet' type='button'>Clear</button>");
-  $('#gameButtons').append("<button id='flip_y' type='button'><--></button>");
-  $('#gameButtons').append("<button id='flip_x' type='button'>^</br>|</br>v</button>");
+  var glider = new simpleGrid(10, pallet.glider, 'Glider');
+  var ship = new simpleGrid(10, pallet.lwss, 'Space Ship');
   $('#copy_button').bind('click', pallet.toggleCursor);
   //$(document).bind('click', pallet.toggleCursor);
   $('#clear_pallet').bind('click', pallet.clear);
@@ -114,6 +134,30 @@ pallet.emptyTenByTen = [[false, false, false, false, false, false, false, false,
                        [false, false, false, false, false, false, false, false, false, false,],
                        [false, false, false, false, false, false, false, false, false, false,],
                        [false, false, false, false, false, false, false, false, false, false,]];
+
+pallet.glider = [[false, false, false, false, false, false, false, false, false, false,],
+                 [false, false, false, false, false, false, false, false, false, false,],
+                 [false, false, false, false, false, false, false, false, false, false,],
+                 [false, false, false, true, true, true, false, false, false, false,],
+                 [false, false, false, true, false, false, false, false, false, false,],
+                 [false, false, false, false, true, false, false, false, false, false,],
+                 [false, false, false, false, false, false, false, false, false, false,],
+                 [false, false, false, false, false, false, false, false, false, false,],
+                 [false, false, false, false, false, false, false, false, false, false,],
+                 [false, false, false, false, false, false, false, false, false, false,],
+                 [false, false, false, false, false, false, false, false, false, false,]];
+
+pallet.lwss = [[false, false, false, false, false, false, false, false, false, false,],
+               [false, false, false, false, false, false, false, false, false, false,],
+               [false, false, false, false, false, false, false, false, false, false,],
+               [false, false, false, true, true, true, true, false, false, false,],
+               [false, false, true, false, false, false, true, false, false, false,],
+               [false, false, false, false, false, false, true, false, false, false,],
+               [false, false, true, false, false, true, false, false, false, false,],
+               [false, false, false, false, false, false, false, false, false, false,],
+               [false, false, false, false, false, false, false, false, false, false,],
+               [false, false, false, false, false, false, false, false, false, false,],
+               [false, false, false, false, false, false, false, false, false, false,]];
 
 pallet.initGrid = function (s, aliveCells) {
   $('#palletTableBody').html('');
