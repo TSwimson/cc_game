@@ -7,10 +7,10 @@
   height: 10px;
   border: 1px solid gray;
 }
-.palletTable .cell {
+/*.palletTable .cell {
   width: 15px;
   height: 15px;
-}
+}*/
 .alive {
   background-color: black;
 }
