@@ -1,14 +1,18 @@
-<div class='row' id="structures">
+<h5>Structure Pallet</h5>
+<div id="structures" class='{{playerNumber}}'>
   
 </div>
-<table class='palletTable' id='palletTable'>
+<button id='flip_y' type='button'>&larr;  &rarr;</button>
+<table class='palletTable {{playerNumber}}' id='palletTable'>
   <tbody id='palletTableBody'>
   </tbody>
 </table>
+<button id='flip_x' type='button'>&uarr;</br>&darr;</button>
 <div id="gameButtons">
-  <button id='copy_button' type='button'>Copy</button>
-  <button id='clear_pallet' type='button'>Clear</button>
-  <button id='flip_y' type='button'>K</button>
-  <button id='flip_x' type='button'>^</br>|</br>v</button>
+  <div>
+    <button id='copy_button' type='button'>Copy</button>
+    <button id='clear_pallet' type='button'>Clear</button>
+  </div>
+  <button type='button' id='endTurn'>End Turn</button>
   <div id='playerCells'></div>
 </div>

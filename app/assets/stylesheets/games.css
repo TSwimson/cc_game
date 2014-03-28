@@ -1,46 +1,114 @@
 body {
   background-color: #f2f2f2;
 }
+.player-name {
+  margin-top: 5px;
+}
+#flip_x {
+  position: absolute;
+  width: 25px;
+  height: 75px;
+  left: 230px;
+  top:290px;
+}
+#flip_y {
+  position: absolute;
+  left: 120px;
+  top: 210px;
+}
 .structure {
-  background-color: #444;
-  box-shadow: 1px 1px 3px 3px #777;
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  background-color: #222;
+  /*border: 2px solid #444;*/
   border-radius: 5px;
+  margin: 5px;
   padding: 0;
+  width: 132px;
+  height: 160px;
+  box-shadow: 0 6px #111;
+}
+.structure:hover {
+  top: 1px;
+  box-shadow: 0 3px #111;
+}
+.structure:active {
+  top: 2px;
+  box-shadow: 0 0 #111;
 }
 .structure-inner-div {
-  margin: 5 auto;
-  width: 121px;
-  height: 121px;
+  position: absolute;
+  width: 132px;
+  height: 160px;
 }
 .structureTable {
+  margin: 5px auto;
 }
 .structure h4 {
-  margin: 5px auto;
+  position: absolute;
+  top: 120px;
+  left: 10px;
 }
 .gameContainer {
   background-color: #333;
+  width: 900px;
+  height: 550px;
+  margin: 0 auto;
+  position: relative;
   box-shadow: 1px 1px 3px 3px #777;
   border-radius: 5px;
   color: #f2f2f2;
   padding: 10px;
 }
 .gameTable {
-  background-color: gray;
+  cursor: pointer;
+  background: #014f00; /* Old browsers */
+  background: -moz-linear-gradient(top,  #014f00 0%, #5b5b5b 49%, #5b5b5b 51%, #0d3456 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#014f00), color-stop(49%,#5b5b5b), color-stop(51%,#5b5b5b), color-stop(100%,#0d3456)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  #014f00 0%,#5b5b5b 49%,#5b5b5b 51%,#0d3456 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  #014f00 0%,#5b5b5b 49%,#5b5b5b 51%,#0d3456 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  #014f00 0%,#5b5b5b 49%,#5b5b5b 51%,#0d3456 100%); /* IE10+ */
+  background: linear-gradient(to bottom,  #014f00 0%,#5b5b5b 49%,#5b5b5b 51%,#0d3456 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#014f00', endColorstr='#0d3456',GradientType=0 ); /* IE6-9 */
+  box-shadow: 0 0 2px 2px #222;
+  border-radius: 5px;
 }
 #gameButtons {
- color: #888; 
+ position: absolute;
+ left: 60px;
+ top: 400px;
 }
 #palletDiv {
   height: 480px;
+  width: 400px;
+  position: absolute;
+  top: 10px;
+  left: 550px;
 }
 #playerCells {
-  float: right;
+  position: absolute;
+  top: 70px;
+  left: 20px;
 }
 .cell {
-  background-color: white;
+  background-color: #777;
   width: 12px;
   height: 12px;
-  border: 1px solid gray;
+  border: 1px solid rgba(50,50,50,.15);
+}
+
+.gameTable .cell {
+  background-color: rgba(0,0,0,0);
+  border: 1px solid rgba(50,50,50,.15);
+}
+.palletTable {
+  cursor: pointer;
+  position: absolute;
+  left: 70px;
+  top: 245px;
+  box-shadow: 0 0 2px 2px #222;
+  border-radius: 5px;
 }
 .palletTable .cell {
   width: 15px;
@@ -53,23 +121,23 @@ body {
 .alive {
   background-color: black;
 }
-.one-territory {
-  background-color: #889;
+.cell.one-alive {
+  background-color: #FF7500;
 }
-.two-territory {
-  background-color: #988;
+.cell.two-alive {
+  background-color: #f2f2f2;
 }
-.one-alive {
-  background-color: #009;
+.one .cell {
+  background-color: #014f00;
 }
-.two-alive {
-  background-color: #900;
+.two .cell {
+  background-color: #0d3456;
 }
-.three-alive {
-  background-color: #099;
+.one .alive {
+  background-color: #FF7500;
 }
-.four-alive {
-  background-color: #990;
+.two .alive {
+  background-color: #f2f2f2;
 }
 #playerCells {
   float: right;
@@ -86,4 +154,23 @@ body {
   display: none;
   position: absolute;
   z-index: 100;
+  width: 120px;
+  height: 120px;
+}
+.gameContainer button {
+  background-color: #222;
+  margin-bottom: 10px;
+  width: 75px;
+  height: 25px;
+  color: #f2f2f2;
+  border: 0;
+  box-shadow: 0 5px #111;
+}
+.gameContainer button:hover {
+  top: 1px;
+  box-shadow: 0 3px #111;
+}
+.gameContainer button:active {
+  top: 2px;
+  box-shadow: 0 0 #111;
 }

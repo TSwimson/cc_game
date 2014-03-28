@@ -2,17 +2,12 @@ gameWrapper = {};
 
 gameWrapper.start_game = function() {
   gameWrapper.nextMoves = [];
-
+  gameWrapper.setupPlayers();
+  var html = HandlebarsTemplates.game({playerOne: gameWrapper.player.data.name, playerTwo: gameWrapper.opponent.data.name});
+  $('.gameContainer').append(html);
   gameWrapper.grid = new Grid(40,40);
+  pallet.init();
   gameWrapper.round_one = true;
-  gameWrapper.channel = playerSetup.dispatcher.subscribe_private('game' + playerSetup.game.id);
-  gameWrapper.channel.on_success = function(data){
-    console.log('Joined game channel. Data: ' + data);
-  };
-
-  gameWrapper.channel.on_failure = function(data){
-    console.log('couldnt join game channel. Data: ' + data);
-  };
 
   playerSetup.user_channel.bind('next_turn', function(data){
     console.log('next turn triggered data : ' + data);
@@ -26,10 +21,39 @@ gameWrapper.start_game = function() {
     }
   });
 
-  if (playerSetup.opponent.id > playerSetup.current_user.id) {
+  gameWrapper.endGame = false;
+  $('#endTurn').on('click', function() {
+    gameWrapper.endTurn();
+  });
+  $(document).on('keypress', function(event){
+    if (event.which === 13) {
+      gameWrapper.endTurn();
+    }
+  });
+  gameWrapper.updateCellCount();
+};
+gameWrapper.endTurn = function(){
+  console.log('submitting turn');
+  if (gameWrapper.round_one){
+    gameWrapper.round_one = false;
+  }
+  playerSetup.dispatcher.trigger('submit_turn', { moves: gameWrapper.nextMoves });
+  gameWrapper.nextMoves = [];
+  gameWrapper.player.cells += 10;
+  gameWrapper.opponent.cells += 10;
+  gameWrapper.updateCellCount();
+  if (gameWrapper.endGame) {
+    alert("player " + gameWrapper.loser +  ' lost!');
+  }
+};
+
+gameWrapper.setupPlayers = function(){
+    if (playerSetup.opponent.id > playerSetup.current_user.id) {
     gameWrapper.player = {};
     gameWrapper.opponent = {};
     gameWrapper.player.number = "one";
+    gameWrapper.player.data = playerSetup.current_user;
+    gameWrapper.opponent.data = playerSetup.opponent;
     gameWrapper.opponent.number = "two";
 
   } else {
@@ -37,31 +61,12 @@ gameWrapper.start_game = function() {
     gameWrapper.opponent = {};
     gameWrapper.player.number = "two";
     gameWrapper.opponent.number = "one";
+    gameWrapper.opponent.data = playerSetup.current_user;
+    gameWrapper.player.data = playerSetup.opponent;
   }
   gameWrapper.player.cells = 4;
   gameWrapper.opponent.cells = 4;
-
-  $('#gameButtons').html("<button type='button' id='endTurn'>End Turn</button>");
-
-  gameWrapper.endGame = false;
-  $('#endTurn').on('click', function(event) {
-    console.log('submitting turn');
-    if (gameWrapper.round_one){
-      gameWrapper.round_one = false;
-    }
-    playerSetup.dispatcher.trigger('submit_turn', { moves: gameWrapper.nextMoves });
-    gameWrapper.nextMoves = [];
-    gameWrapper.player.cells += 10;
-    gameWrapper.opponent.cells += 10;
-    gameWrapper.updateCellCount();
-    if (gameWrapper.endGame) {
-      alert("player " + gameWrapper.loser +  ' lost!');
-    }
-  });
-  pallet.init();
-  gameWrapper.updateCellCount();
 };
-
 gameWrapper.updateCellCount = function(){
   $('#playerCells').html("<p>" + gameWrapper.player.cells + " cells remaining</p>");
 };

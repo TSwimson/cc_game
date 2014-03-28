@@ -28,8 +28,8 @@ class AuthorizationController < WebsocketRails::BaseController
       trigger_failure({message: "something bad happend when trying to save user #{current_user.id} status"})
     end
     if opponent
-      current_user.player.status = opponent.user.id
-      opponent.status = current_user.id
+      current_user.player.status = opponent.user.id.to_s
+      opponent.status = current_user.id.to_s
       opponent.user.save
       current_user.player.save
       WebsocketRails["user#{current_user.id}"].trigger('opponent_found', opponent.to_json)
@@ -108,7 +108,7 @@ class AuthorizationController < WebsocketRails::BaseController
   private
 
   def get_looking_player(id)
-    player = Player.where(status: id)[0]
+    player = Player.where(status: id.to_s)[0]
     player = player || Player.where(status: 'looking').where('user_id != ?', id)[0]
   end
 
