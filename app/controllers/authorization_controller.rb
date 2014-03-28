@@ -7,7 +7,7 @@ class AuthorizationController < WebsocketRails::BaseController
       if user_signed_in? && "user" + current_user.id.to_s == message[:channel]
         accept_channel current_user.player
       else
-        deny_channel({:message => 'authorization failed!'})
+        deny_channel({:message => "authorization failed! user_signed_in?: #{user_signed_in?} current_user.id: #{current_user.id.to_s} channel: #{message[:channel]}"})
       end
     elsif message[:channel][0, 4] == 'game'
       if user_signed_in? && current_user.game != nil && message[:channel][4] == current_user.game.id.to_s
