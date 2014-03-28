@@ -1,5 +1,29 @@
 == README
 
+This the repo for my final project, a multiplayer edition of Conways Game of Life. Try it here! http://54.186.18.21/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 This README would normally document whatever steps are necessary to get the
 application up and running.
 
