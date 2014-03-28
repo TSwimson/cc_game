@@ -3,8 +3,8 @@ opdata = {};
 
 //connects to this users private channel
 playerSetup.join_user_channel = function() {
-  var server = '54.186.18.21:80/websocket';
-  //var server = 'localhost:3000/websocket';
+  //var server = '54.186.18.21:80/websocket';
+  var server = 'localhost:3000/websocket';
   playerSetup.dispatcher = new WebSocketRails(server);
   playerSetup.user_channel = playerSetup.dispatcher.subscribe_private('user' + $('#current_user').data('userId'));
   playerSetup.user_channel.on_success = function(current_user) {

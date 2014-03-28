@@ -51,7 +51,7 @@ class AuthorizationController < WebsocketRails::BaseController
     player_one_available = (player_one.status == 'looking' || player_one.status.to_i == player_two.id)
 
     if player_two_available && player_one_available
-      if player_two.game_id == player_one.game_id && player_one.game_id != nil
+      if player_two.game_id == player_one.game_id && player_one.game_id != nil && player_one.game.round == 0
         game = player_one.game
         player_one.status = 'ingame'
         player_two.status = 'ingame'
