@@ -10,7 +10,6 @@ gameWrapper.start_game = function() {
   gameWrapper.round_one = true;
 
   playerSetup.user_channel.bind('next_turn', function(data){
-    console.log('next turn triggered data : ' + data);
     moves = JSON.parse(data);
     moves = moves[playerSetup.opponent.id];
     for (var i in moves) {
@@ -33,7 +32,6 @@ gameWrapper.start_game = function() {
   gameWrapper.updateCellCount();
 };
 gameWrapper.endTurn = function(){
-  console.log('submitting turn');
   if (gameWrapper.round_one){
     gameWrapper.round_one = false;
   }

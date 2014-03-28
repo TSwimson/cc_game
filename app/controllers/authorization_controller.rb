@@ -75,10 +75,6 @@ class AuthorizationController < WebsocketRails::BaseController
   end
 
   def player_disconnected
-    puts '###################################'
-    puts '#######USER DISCONNECTED###########'
-    puts '###################################'
-    puts 'Their id = ' + current_user.id
     current_user.player.status = 'offline'
     current_user.game.destroy if current_user.game
     current_user.player.save
@@ -87,8 +83,6 @@ class AuthorizationController < WebsocketRails::BaseController
   def submit_turn
     game = current_user.game
     game = Game.find(game.id)
-    puts "0 game round = " + game.round.to_s
-    puts "0 game id = " + game.id.to_s
     player = game.players.where('user_id != ?', current_user.id).first
     Move.create(round: game.round, points: message[:moves].to_json, user_id: current_user.id, game_id: game.id)
     moves = {}
@@ -97,8 +91,6 @@ class AuthorizationController < WebsocketRails::BaseController
     if (moves[player.user.id])
       moves[player.user.id] = JSON.parse(moves[player.user.id].points)
       game.round += 1
-      puts "game round = " + game.round.to_s
-      puts "game id = " + game.id.to_s
       game.save
       WebsocketRails["user#{player.user.id}"].trigger('next_turn', moves.to_json)
       WebsocketRails["user#{current_user.id}"].trigger('next_turn', moves.to_json)

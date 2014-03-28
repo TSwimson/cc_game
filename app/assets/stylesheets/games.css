@@ -166,6 +166,9 @@ body {
   border: 0;
   box-shadow: 0 5px #111;
 }
+.gameContainer button:focus {
+  outline: 0;
+}
 .gameContainer button:hover {
   top: 1px;
   box-shadow: 0 3px #111;
