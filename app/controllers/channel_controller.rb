@@ -14,9 +14,14 @@ class ChannelController < WebsocketRails::BaseController
     end
   end
 
+  # when the user is disconneted destroy their game and set their status to offline and their game_id to nil
   def player_disconnected
     current_user.player.status = 'offline'
-    current_user.game.destroy if current_user.game
+    game = current_user.game
+    if game
+      User.where(game_id: game.id).update_all(game_id: nil)
+      current_user.game.destroy
+    end
     current_user.player.save
   end
 end
