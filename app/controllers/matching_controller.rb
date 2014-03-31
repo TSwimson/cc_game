@@ -1,24 +1,9 @@
-class AuthorizationController < WebsocketRails::BaseController
-  def authorize_channels
-    # The channel name will be passed inside the message Hash
-    channel = WebsocketRails[message[:channel]]
-    channel.make_private
-    if message[:channel][0, 4] == 'user'
-      if user_signed_in? && "user" + current_user.id.to_s == message[:channel]
-        accept_channel current_user.player
-      else
-        deny_channel({:message => "authorization failed! user_signed_in?: #{user_signed_in?} current_user.id: #{current_user.id.to_s} channel: #{message[:channel]}"})
-      end
-    elsif message[:channel][0, 4] == 'game'
-      if user_signed_in? && current_user.game != nil && message[:channel][4] == current_user.game.id.to_s
-        accept_channel({:message => 'connected!'})
-      else
-        deny_channel({:message => 'authorization failed!'})
-      end
-    end
-  end
-
+# handles players that are looking for matches
+# and matching them and creating a game for them
+class MatchingController < WebsocketRails::BaseController
   # Set the players status to looking
+  # Check if there is an opponent set their statuses to the opponents id's
+  # trigger the opponent_found for both players
   def find_opponent
     current_user.player.status = 'looking'
     opponent = get_looking_player(current_user.id)
@@ -37,11 +22,11 @@ class AuthorizationController < WebsocketRails::BaseController
     end
   end
 
+  # check if both players are looking
+  # check if the game already exists
+  # if it does then mark the game as started
+  # if it doesn't create it and add both players
   def join_game
-    # check if both players are looking
-    # check if the game already exists
-    # if it does then mark the game as started
-    # if it doesn't create it and add both players
     player_one_user = User.find(message[:player_one_id])
     player_one = player_one_user.player
     player_two_user = User.find(message[:player_two_id])
@@ -74,34 +59,10 @@ class AuthorizationController < WebsocketRails::BaseController
     end
   end
 
-  def player_disconnected
-    current_user.player.status = 'offline'
-    current_user.game.destroy if current_user.game
-    current_user.player.save
-  end
-
-  def submit_turn
-    game = current_user.game
-    game = Game.find(game.id)
-    player = game.players.where('user_id != ?', current_user.id).first
-    Move.create(round: game.round, points: message[:moves].to_json, user_id: current_user.id, game_id: game.id)
-    moves = {}
-    moves[current_user.id] = message[:moves]
-    moves[player.user.id] = Move.where(round: game.round).where(user_id: player.user.id).where(game_id: game.id).first
-    if (moves[player.user.id])
-      moves[player.user.id] = JSON.parse(moves[player.user.id].points)
-      game.round += 1
-      game.save
-      WebsocketRails["user#{player.user.id}"].trigger('next_turn', moves.to_json)
-      WebsocketRails["user#{current_user.id}"].trigger('next_turn', moves.to_json)
-    end
-  end
-
   private
 
   def get_looking_player(id)
     player = Player.where(status: id.to_s)[0]
     player = player || Player.where(status: 'looking').where('user_id != ?', id)[0]
   end
-
 end
