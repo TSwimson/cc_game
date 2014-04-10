@@ -3,6 +3,7 @@ gameWrapper = {};
 gameWrapper.start_game = function() {
   gameWrapper.nextMoves = [];
   gameWrapper.setupPlayers();
+  gameWrapper.frozen = false;
   var html = HandlebarsTemplates.game({playerOne: gameWrapper.player.data.name, playerTwo: gameWrapper.opponent.data.name});
   $('.gameContainer').append(html);
   gameWrapper.grid = new Grid(40,40);
@@ -15,9 +16,10 @@ gameWrapper.start_game = function() {
     for (var i in moves) {
       gameWrapper.grid.click(moves[i][0],moves[i][1]);
     }
-    for(i = 0; i < 10; i++){
+    for(i = 0; i < 10; i++) {
       setTimeout(function(){gameWrapper.grid.update.apply(gameWrapper.grid);},200*i);
     }
+    gameWrapper.frozen = false;
   });
 
   gameWrapper.endGame = false;
@@ -32,16 +34,19 @@ gameWrapper.start_game = function() {
   gameWrapper.updateCellCount();
 };
 gameWrapper.endTurn = function(){
-  if (gameWrapper.round_one){
-    gameWrapper.round_one = false;
-  }
-  playerSetup.dispatcher.trigger('submit_turn', { moves: gameWrapper.nextMoves });
-  gameWrapper.nextMoves = [];
-  gameWrapper.player.cells += 10;
-  gameWrapper.opponent.cells += 10;
-  gameWrapper.updateCellCount();
-  if (gameWrapper.endGame) {
-    alert("player " + gameWrapper.loser +  ' lost!');
+  if (gameWrapper.frozen === false) {
+    gameWrapper.frozen = true;
+    if (gameWrapper.round_one){
+      gameWrapper.round_one = false;
+    }
+    playerSetup.dispatcher.trigger('submit_turn', { moves: gameWrapper.nextMoves });
+    gameWrapper.nextMoves = [];
+    gameWrapper.player.cells += 10;
+    gameWrapper.opponent.cells += 10;
+    gameWrapper.updateCellCount();
+    if (gameWrapper.endGame) {
+      alert("player " + gameWrapper.loser +  ' lost!');
+    }
   }
 };
 
@@ -114,10 +119,12 @@ var Cell = function (alive, x, y, ter) {
   this.$el = $("<td class='cell " + this.territory + "-territory'></td>");
   var _this = this;
   this.$el.on('click', function(){
-    if (pallet.cursor){
-      $.proxy(_this.stamp(), _this);
-    } else {
-      $.proxy(_this.click(gameWrapper.player), _this);
+    if (gameWrapper.frozen === false) {
+      if (pallet.cursor){
+        $.proxy(_this.stamp(), _this);
+      } else {
+        $.proxy(_this.click(gameWrapper.player), _this);
+      }
     }
   });
 };

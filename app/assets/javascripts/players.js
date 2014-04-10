@@ -1,5 +1,4 @@
 playerSetup = {};
-opdata = {};
 
 //connects to this users private channel
 playerSetup.join_user_channel = function() {
