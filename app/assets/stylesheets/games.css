@@ -61,6 +61,21 @@ body {
   color: #f2f2f2;
   padding: 10px;
 }
+.waiting {
+  background-color: rgba(3,3,3,0.5);
+  width: 900px;
+  height: 550px;
+  margin: 0 auto;
+  position: relative;
+  top: -550px;
+  z-index: 100;
+  color: #f2f2f2;
+}
+.waiting>h4 {
+  top: 515px;
+  position: absolute;
+  left: 340px;
+}
 .gameTable {
   cursor: pointer;
   background: #014f00; /* Old browsers */
@@ -153,7 +168,7 @@ body {
   opacity:0.5;
   display: none;
   position: absolute;
-  z-index: 100;
+  z-index: 75;
   width: 120px;
   height: 120px;
 }

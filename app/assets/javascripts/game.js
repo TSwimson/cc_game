@@ -3,7 +3,7 @@ gameWrapper = {};
 gameWrapper.start_game = function() {
   gameWrapper.nextMoves = [];
   gameWrapper.setupPlayers();
-  gameWrapper.frozen = false;
+  gameWrapper.unfreeze();
   var html = HandlebarsTemplates.game({playerOne: gameWrapper.player.data.name, playerTwo: gameWrapper.opponent.data.name});
   $('.gameContainer').append(html);
   gameWrapper.grid = new Grid(40,40);
@@ -19,7 +19,7 @@ gameWrapper.start_game = function() {
     for(i = 0; i < 10; i++) {
       setTimeout(function(){gameWrapper.grid.update.apply(gameWrapper.grid);},200*i);
     }
-    gameWrapper.frozen = false;
+    gameWrapper.unfreeze();
   });
 
   gameWrapper.endGame = false;
@@ -35,7 +35,7 @@ gameWrapper.start_game = function() {
 };
 gameWrapper.endTurn = function(){
   if (gameWrapper.frozen === false) {
-    gameWrapper.frozen = true;
+    gameWrapper.freeze();
     if (gameWrapper.round_one){
       gameWrapper.round_one = false;
     }
@@ -74,38 +74,14 @@ gameWrapper.updateCellCount = function(){
   $('#playerCells').html("<p>" + gameWrapper.player.cells + " cells remaining</p>");
 };
 
-var GAME = {
-  width: 400,
-  height: 400,
-  cell: {
-    width: 5,
-    height: 5,
-    padding: 1,
-    aliveColor: 'black',
-    deadColor: 'grey'
-  },
-  players: {
-    one: {
-      cell: {
-        aliveColor: '#900'
-      }
-    },
-    two: {
-      cell: {
-        aliveColor: '#090'
-      }
-    },
-    three: {
-      cell: {
-        aliveColor: '#009'
-      }
-    },
-    four: {
-      cell: {
-        aliveColor: '#909'
-      }
-    }
-  }
+gameWrapper.freeze = function(){
+  gameWrapper.frozen = true;
+  $('#main_container').append("<div class=\'waiting\'><h4>Waiting For Opponent</h4></div>");
+};
+
+gameWrapper.unfreeze = function(){
+  gameWrapper.frozen = false;
+  $('.waiting').remove();
 };
 
 //Cell definition
