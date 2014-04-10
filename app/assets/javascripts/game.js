@@ -76,7 +76,7 @@ gameWrapper.updateCellCount = function(){
 
 gameWrapper.freeze = function(){
   gameWrapper.frozen = true;
-  $('#main_container').append("<div class=\'waiting\'><h4>Waiting For Opponent</h4></div>");
+  $('#main_container').append("<div class=\'waiting\'><h4>waiting for opponent</h4></div>");
 };
 
 gameWrapper.unfreeze = function(){
