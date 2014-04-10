@@ -68,6 +68,16 @@ body {
   margin: 0 auto;
   position: relative;
   top: -550px;
+  z-index: 90;
+  color: #f2f2f2;
+}
+.game_rules {
+  background-color: rgba(3,3,3,0.5);
+  width: 900px;
+  height: 550px;
+  margin: 0 auto;
+  position: relative;
+  top: -550px;
   z-index: 100;
   color: #f2f2f2;
 }
@@ -191,4 +201,16 @@ body {
 .gameContainer button:active {
   top: 2px;
   box-shadow: 0 0 #111;
+}
+.territory_seperator {
+  border-top: 1px dashed #f2f2f2;
+  height: 1px;
+  position: absolute;
+  width: 480px;
+}
+.territory_seperator.one {
+    top: 248px;
+}
+.territory_seperator.two {
+    top: 296px;
 }
