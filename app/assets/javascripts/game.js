@@ -9,14 +9,15 @@ gameWrapper.start_game = function() {
   gameWrapper.grid = new Grid(40,40);
   pallet.init();
   gameWrapper.round_one = true;
-
+  gameWrapper.iterations = 13;
   playerSetup.user_channel.bind('next_turn', function(data){
     moves = JSON.parse(data);
     moves = moves[playerSetup.opponent.id];
+    gameWrapper.iterations += 1;
     for (var i in moves) {
       gameWrapper.grid.click(moves[i][0],moves[i][1]);
     }
-    for(i = 0; i < 10; i++) {
+    for(i = 0; i < gameWrapper.iterations; i++) {
       setTimeout(function(){gameWrapper.grid.update.apply(gameWrapper.grid);},200*i);
     }
     gameWrapper.unfreeze();
