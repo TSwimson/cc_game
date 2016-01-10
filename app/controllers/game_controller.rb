@@ -2,7 +2,7 @@
 class GameController < WebsocketRails::BaseController
   # When a player has submitted their turn
   # add it to the database
-  # and if their opponent has submitted thier turn send the end_turn event to the users clients
+  # and if their opponent has submitted their turn send the end_turn event to the users clients
   def submit_turn
     game = current_user.game
     game = Game.find(game.id)

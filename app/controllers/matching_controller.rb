@@ -2,7 +2,7 @@
 # and matching them and creating a game for them
 class MatchingController < WebsocketRails::BaseController
   # Set the players status to looking
-  # Check if there is an opponent set their statuses to the opponents id's
+  # if there is an opponent set their statuses to the opponents id's
   # trigger the opponent_found for both players
   # make sure their game id's are nil because they must not be in a game if their status is not 'ingame'
   def find_opponent
