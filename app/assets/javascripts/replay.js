@@ -14,7 +14,8 @@ replayWrapper.list = function(data) {
       'player_2_email': replay['player_2']['name'],
       'round':          replay['round'],
       'updated_at':     replay['updated_at'],
-      'id':             replay['id']
+      'id':             replay['id'],
+      'datetime':       replay['updated_at']
     }));
   });
   $('.replays tbody').html(table_data.join("\n"));

@@ -1,63 +1,65 @@
 gameWrapper = {};
 
 gameWrapper.start_game = function() {
-  gameWrapper.init_vars();
+  this.init_vars();
 
-  gameWrapper.setupPlayers();
-  gameWrapper.unfreeze();
-  var html = HandlebarsTemplates.game({playerOne: gameWrapper.player.data.name, playerTwo: gameWrapper.opponent.data.name});
+  this.setupPlayers();
+  this.unfreeze();
+  var html = HandlebarsTemplates.game({playerOne: this.player.data.name, playerTwo: this.opponent.data.name});
   $('.gameContainer').append(html);
-  gameWrapper.grid = new Grid(40,40);
+  this.grid = new Grid(40,40);
   pallet.init();
 
-  playerSetup.user_channel.bind('next_turn', gameWrapper.nextTurn);
+  playerSetup.user_channel.bind('next_turn', this.nextTurn.bind(this));
 
 
   $('#endTurn').on('click', function() {
-    gameWrapper.endTurn();
-  });
+    this.endTurn();
+  }.bind(this));
   $(document).on('keypress', function(event){
     if (event.which === 13) {
-      gameWrapper.endTurn();
+      this.endTurn();
     }
-  });
+  }.bind(this));
 
-  gameWrapper.updateCellCount();
+  this.updateCellCount();
 };
 
 gameWrapper.init_vars = function() {
-  gameWrapper.nextMoves = [];
-  gameWrapper.round_one = true;
-  gameWrapper.iterations = 13;
-  gameWrapper.endGame = false;
-  gameWrapper.replay = false;
-  gameWrapper.round = 0;
+  this.nextMoves = [];
+  this.round_one = true;
+  this.iterations = 13;
+  this.endGame = false;
+  this.replay = false;
+  this.round = 0;
+  this.continue_replay = true;
+  this.replay_wait_period = 150;
 }
 
 gameWrapper.start_replay = function(data) {
-  gameWrapper.init_vars();
-  gameWrapper.replay = true;
-  gameWrapper.setupPlayers();
-  gameWrapper.unfreeze();
-  var html = HandlebarsTemplates.game({playerOne: gameWrapper.player.data.name, playerTwo: gameWrapper.opponent.data.name});
+  this.init_vars();
+  this.replay = true;
+  this.setupPlayers();
+  this.unfreeze();
+  var html = HandlebarsTemplates.game({playerOne: this.player.data.name, playerTwo: this.opponent.data.name});
   $('.gameContainer').append(html);
-  gameWrapper.grid = new Grid(40,40);
-  playerSetup.user_channel.bind('next_replay_turn', gameWrapper.nextReplayTurn)
-  gameWrapper.nextReplayTurn(data['moves']);
+  this.grid = new Grid(40,40);
+  playerSetup.user_channel.bind('next_replay_turn', this.nextReplayTurn.bind(this))
+  this.nextReplayTurn(data['moves']);
 }
 
 gameWrapper.nextTurn = function(data) {
-    gameWrapper.round += 1;
+    this.round += 1;
     moves = JSON.parse(data);
     moves = moves[playerSetup.opponent.id];
-    // gameWrapper.iterations += 1;
+    // this.iterations += 1;
     for (var i in moves) {
-      gameWrapper.grid.click(moves[i][0],moves[i][1]);
+      this.grid.click(moves[i][0],moves[i][1]);
     }
-    for(i = 0; i < gameWrapper.iterations; i++) {
-      setTimeout(function(){gameWrapper.grid.update.apply(gameWrapper.grid);},200*i);
+    for(i = 0; i < this.iterations; i++) {
+      setTimeout(this.grid.update.bind(this.grid),200*i);
     }
-    gameWrapper.unfreeze();
+    this.unfreeze();
 }
 
 gameWrapper.nextReplayTurn = function(data) {
@@ -66,48 +68,50 @@ gameWrapper.nextReplayTurn = function(data) {
   for ( var player in moves) {
     for (var i in moves[player]) {
       // console.log("clicking: " + moves[player][i][0] + ', ' + moves[player][i][1])
-      gameWrapper.grid.click(moves[player][i][0], moves[player][i][1]);
+      this.grid.click(moves[player][i][0], moves[player][i][1]);
     }
   }
-  for(i = 0; i < gameWrapper.iterations; i++) {
-    setTimeout(function(){gameWrapper.grid.update.apply(gameWrapper.grid);}, 200*i);
+  for(i = 0; i < this.iterations; i++) {
+    setTimeout(this.grid.update.bind(this.grid), this.replay_wait_period*i);
   }
-  gameWrapper.getNextReplayTurn();
+  if (this.continue_replay) {
+    setTimeout(this.getNextReplayTurn.bind(this), this.replay_wait_period*(this.iterations + 1));
+  }
 }
 
 gameWrapper.getNextReplayTurn = function() {
-  gameWrapper.round += 1;
-  if (gameWrapper.frozen === false) {
-    // gameWrapper.freeze();
-    if (gameWrapper.round_one){
-      gameWrapper.round_one = false;
+  this.round += 1;
+  if (this.frozen === false) {
+    // this.freeze();
+    if (this.round_one){
+      this.round_one = false;
     }
 
-    gameWrapper.nextMoves = [];
-    gameWrapper.player.cells += 10;
-    gameWrapper.opponent.cells += 10;
-    gameWrapper.updateCellCount();
-    if (gameWrapper.endGame) {
-      alert("player " + gameWrapper.loser +  ' lost!');
+    this.nextMoves = [];
+    this.player.cells += 10;
+    this.opponent.cells += 10;
+    this.updateCellCount();
+    if (this.endGame) {
+      alert("player " + this.loser +  ' lost!');
     } else {
-      playerSetup.dispatcher.trigger('get_next_replay_turn', {'round': gameWrapper.round});
+      playerSetup.dispatcher.trigger('get_next_replay_turn', {'round': this.round});
     }
   }
 }
 
 gameWrapper.endTurn = function(){
-  if (gameWrapper.frozen === false) {
-    gameWrapper.freeze();
-    if (gameWrapper.round_one){
-      gameWrapper.round_one = false;
+  if (this.frozen === false) {
+    this.freeze();
+    if (this.round_one){
+      this.round_one = false;
     }
-    moves = gameWrapper.nextMoves;
-    gameWrapper.nextMoves = [];
-    gameWrapper.player.cells += 10;
-    gameWrapper.opponent.cells += 10;
-    gameWrapper.updateCellCount();
-    if (gameWrapper.endGame) {
-      alert("player " + gameWrapper.loser +  ' lost!');
+    moves = this.nextMoves;
+    this.nextMoves = [];
+    this.player.cells += 10;
+    this.opponent.cells += 10;
+    this.updateCellCount();
+    if (this.endGame) {
+      alert("player " + this.loser +  ' lost!');
     }
     console.log('dispatching moves: ' + moves);
     playerSetup.dispatcher.trigger('submit_turn', { moves: moves });
@@ -116,35 +120,34 @@ gameWrapper.endTurn = function(){
 
 gameWrapper.setupPlayers = function(){
   if (playerSetup.opponent.id > playerSetup.current_user.id) {
-    gameWrapper.player = {};
-    gameWrapper.opponent = {};
-    gameWrapper.player.number = "one";
-    gameWrapper.player.data = playerSetup.current_user;
-    gameWrapper.opponent.data = playerSetup.opponent;
-    gameWrapper.opponent.number = "two";
-
+    this.player = {};
+    this.opponent = {};
+    this.player.number = "one";
+    this.player.data = playerSetup.current_user;
+    this.opponent.data = playerSetup.opponent;
+    this.opponent.number = "two";
   } else {
-    gameWrapper.player = {};
-    gameWrapper.opponent = {};
-    gameWrapper.player.number = "two";
-    gameWrapper.opponent.number = "one";
-    gameWrapper.opponent.data = playerSetup.current_user;
-    gameWrapper.player.data = playerSetup.opponent;
+    this.player = {};
+    this.opponent = {};
+    this.player.number = "two";
+    this.opponent.number = "one";
+    this.opponent.data = playerSetup.current_user;
+    this.player.data = playerSetup.opponent;
   }
-  gameWrapper.player.cells = 4;
-  gameWrapper.opponent.cells = 4;
+  this.player.cells = 4;
+  this.opponent.cells = 4;
 };
 gameWrapper.updateCellCount = function(){
-  $('#playerCells').html("<p>" + gameWrapper.player.cells + " cells remaining</p>");
+  $('#playerCells').html("<p>" + this.player.cells + " cells remaining</p>");
 };
 
 gameWrapper.freeze = function(){
-  gameWrapper.frozen = true;
+  this.frozen = true;
   $('#main_container').append("<div class=\'waiting\'><h4>waiting for opponent</h4></div>");
 };
 
 gameWrapper.unfreeze = function(){
-  gameWrapper.frozen = false;
+  this.frozen = false;
   $('.waiting').remove();
 };
 

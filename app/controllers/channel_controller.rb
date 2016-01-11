@@ -21,7 +21,7 @@ class ChannelController < WebsocketRails::BaseController
     if game
       Player.where(game_id: game.id).update_all(game_id: nil)
       # current_user.game.destroy no longer need to destroy game
-      current_user.game.update_attributes(status: 'ended')
+      current_user.game.update_attributes(status: 'ended') unless game.status == 'ended'
     end
     current_user.player.save
   end

@@ -1,7 +1,11 @@
 class ReplayController < WebsocketRails::BaseController
 
   def get_replays
-    WebsocketRails[current_user.channel].trigger('replay_list', Game.replays.as_json(include: [:player_1, :player_2]))
+    replays = Game.replays.as_json(include: [:player_1, :player_2])
+    replays.each do |replay|
+      replay['updated_at'] = replay['updated_at'].in_time_zone('Pacific Time (US & Canada)').strftime('%b/%d/%y %l:%M %p')
+    end
+    WebsocketRails[current_user.channel].trigger('replay_list', replays)
   end
 
   def select_replay
@@ -12,7 +16,6 @@ class ReplayController < WebsocketRails::BaseController
 
   def get_next_replay_turn
     game = current_user.game
-    binding.pry
     WebsocketRails[current_user.channel].trigger('next_replay_turn', game.moves_for_round(message[:round].to_i))
 
   end
