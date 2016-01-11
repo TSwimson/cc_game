@@ -13,6 +13,7 @@ playerSetup.join_user_channel = function() {
 //sets players status to looking and subscribes to the found opponent event
 playerSetup.find_match = function() {
   $('#find_opponent').remove();
+  $('.list_replays').addClass('hidden');
   $('#finding_opponent').html('Looking For Player');
   var object = {};
   playerSetup.dispatcher.trigger('find_opponent', object);
@@ -40,5 +41,5 @@ $(function(){
     playerSetup.join_user_channel();
   }
   $('body').on('click', '.find_match', playerSetup.find_match);
-  $('body').on('click', '.list_replays', replayWrapper.init);
+  $('body').on('click', '.list_replays', replayWrapper.init.bind(replayWrapper));
 });

@@ -1,9 +1,9 @@
 replayWrapper = {};
 
 replayWrapper.init = function() {
-  playerSetup.user_channel.bind('replay.list', replayWrapper.list);
+  playerSetup.user_channel.bind('replay.list', this.list.bind(this));
   replayWrapper.request_list();
-  $('body').on('click', '.start_replay', replayWrapper.select_replay);
+  $('body').on('click', '.start_replay', this.select_replay.bind(this));
 }
 
 replayWrapper.list = function(data) {

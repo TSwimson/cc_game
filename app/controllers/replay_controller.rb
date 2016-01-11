@@ -17,6 +17,5 @@ class ReplayController < WebsocketRails::BaseController
   def get_next_turn
     game = current_user.game
     WebsocketRails[current_user.channel].trigger('replay.next_turn', game.moves_for_round(message[:round].to_i))
-
   end
 end
