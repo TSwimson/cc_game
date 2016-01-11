@@ -30,4 +30,8 @@ class User < ActiveRecord::Base
     self.player = Player.create(name: self.email)
   end
 
+  def channel
+    "user#{id}"
+  end
+
 end

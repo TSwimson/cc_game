@@ -40,4 +40,5 @@ $(function(){
     playerSetup.join_user_channel();
   }
   $('body').on('click', '.find_match', playerSetup.find_match);
+  $('body').on('click', '.list_replays', replayWrapper.init);
 });

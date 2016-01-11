@@ -40,7 +40,7 @@ class MatchingController < WebsocketRails::BaseController
         player_two.status = 'ingame'
         player_one.save
         player_two.save
-        game.update_attributes(status: "started")
+        game.update_attributes(status: "started", player_1_id: player_one_user.id, player_2_id: player_two_user.id)
         WebsocketRails["user#{player_one_user.id}"].trigger('entered_game', game.to_json)
         WebsocketRails["user#{player_two_user.id}"].trigger('entered_game', game.to_json)
       else

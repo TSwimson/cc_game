@@ -13,4 +13,7 @@
 
 class Move < ActiveRecord::Base
   belongs_to :user
+  belongs_to :game
+
+  serialize :points, JSON
 end

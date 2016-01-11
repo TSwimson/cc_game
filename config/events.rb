@@ -8,6 +8,7 @@ WebsocketRails::EventMap.describe do
   subscribe :join_game, to: MatchingController, :with_method => :join_game
   subscribe :submit_turn, to: GameController, :with_method => :submit_turn
 
+  subscribe :get_replays, to: ReplayController, with_method: :get_replays
   subscribe :select_replay, to: ReplayController, with_method: :select_replay
-  subscribe :next_turn, to: ReplayController, with_method: :next_turn
+  subscribe :get_next_replay_turn, to: ReplayController, with_method: :get_next_replay_turn
 end

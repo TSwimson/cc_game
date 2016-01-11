@@ -1,6 +1,18 @@
 <div class="gameContainer">
   <div id='current_user' data-user-id='<%= @current_user.id %>'></div>
   <button type='button' id='find_opponent' class="find_match">Find Opponent</button>
+  <button class="list_replays">List Replays</button>
   <div id='finding_opponent'></div>
+  <table class="replays hidden">
+    <thead>
+      <th>Player One</th>
+      <th>Player Two</th>
+      <th>Rounds</th>
+      <th>Play</th>
+    </thead>
+    <tbody>
+
+    </tbody>
+  </table>
 </div>
 <div id="cursor"></div>
