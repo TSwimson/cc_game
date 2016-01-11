@@ -1,7 +1,7 @@
 replayWrapper = {};
 
 replayWrapper.init = function() {
-  playerSetup.user_channel.bind('replay_list', replayWrapper.list);
+  playerSetup.user_channel.bind('replay.list', replayWrapper.list);
   replayWrapper.request_list();
   $('body').on('click', '.start_replay', replayWrapper.select_replay);
 }
@@ -23,12 +23,12 @@ replayWrapper.list = function(data) {
 };
 
 replayWrapper.request_list = function() {
-  playerSetup.dispatcher.trigger('get_replays', {});
+  playerSetup.dispatcher.trigger('replay.get_list', {});
 }
 
 replayWrapper.select_replay = function(event) {
-  playerSetup.user_channel.bind('first_replay_turn', replayWrapper.first_replay_turn);
-  playerSetup.dispatcher.trigger('select_replay', {game_id: event.target.attributes['game_id'].value})
+  playerSetup.user_channel.bind('replay.first_turn', replayWrapper.first_replay_turn);
+  playerSetup.dispatcher.trigger('replay.select', {game_id: event.target.attributes['game_id'].value})
 };
 
 replayWrapper.first_replay_turn = function(data) {

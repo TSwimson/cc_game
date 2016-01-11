@@ -44,7 +44,7 @@ gameWrapper.start_replay = function(data) {
   var html = HandlebarsTemplates.game({playerOne: this.player.data.name, playerTwo: this.opponent.data.name});
   $('.gameContainer').append(html);
   this.grid = new Grid(40,40);
-  playerSetup.user_channel.bind('next_replay_turn', this.nextReplayTurn.bind(this))
+  playerSetup.user_channel.bind('replay.next_turn', this.nextReplayTurn.bind(this))
   this.nextReplayTurn(data['moves']);
 }
 
@@ -94,7 +94,7 @@ gameWrapper.getNextReplayTurn = function() {
     if (this.endGame) {
       alert("player " + this.loser +  ' lost!');
     } else {
-      playerSetup.dispatcher.trigger('get_next_replay_turn', {'round': this.round});
+      playerSetup.dispatcher.trigger('replay.get_next_turn', {'round': this.round});
     }
   }
 }
